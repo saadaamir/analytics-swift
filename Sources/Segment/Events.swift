@@ -14,7 +14,7 @@ extension Analytics {
     // and they need to write a middleware/enrichment now.
     // the objc version should accomodate them if it's really needed.
     
-    public func track<P: Codable>(name: String, properties: P?, errorCompletion: ((Error) -> Void)?) {
+    public func track<P: Codable>(name: String, properties: P?, errorCompletion: ((Error?) -> Void)?) {
         do {
             if let properties = properties {
                 let jsonProperties = try JSON(with: properties)
@@ -24,9 +24,9 @@ extension Analytics {
                 let event = TrackEvent(event: name, properties: nil)
                 process(incomingEvent: event)
             }
-            errorCompletion(nil)
+            errorCompletion?(nil)
         } catch {
-            errorCompletion(error)
+            errorCompletion?(error)
             exceptionFailure("\(error)")
         }
     }
