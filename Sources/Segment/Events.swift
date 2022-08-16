@@ -138,17 +138,19 @@ extension Analytics {
     ///     but want to record traits, you should pass nil. For more information on how we
     ///     generate the UUID and Apple's policies on IDs, see https://segment.io/libraries/ios#ids
     ///   - properties: A dictionary of traits you know about the user. Things like: email, name, plan, etc.
-    public func track(name: String, properties: [String: Any]? = nil) {
+    public func track(name: String, properties: [String: Any]? = nil, errorCompletion: ((Error?) -> Void)? = nil) {
         var props: JSON? = nil
         if let properties = properties {
             do {
                 props = try JSON(properties)
             } catch {
+                errorCompletion?(error)
                 exceptionFailure("\(error)")
             }
         }
         let event = TrackEvent(event: name, properties: props)
         process(incomingEvent: event)
+        errorCompletion?(nil)
     }
     
     /// Associate a user with their unique ID and record traits about them.
